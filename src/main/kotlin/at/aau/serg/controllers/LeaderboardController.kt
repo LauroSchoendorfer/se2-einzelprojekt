@@ -2,10 +2,15 @@ package at.aau.serg.controllers
 
 import at.aau.serg.models.GameResult
 import at.aau.serg.services.GameResultService
+import io.ktor.http.cio.Response
+import org.springframework.http.HttpStatus
+import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.ResponseBody
 import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.server.ResponseStatusException
 
 @RestController
 @RequestMapping("/leaderboard")
@@ -22,7 +27,7 @@ class LeaderboardController(
         val rankIndex = rank-1;
 
         if(rankIndex >= leaderboard.size || rank < 1) {
-            return leaderboard;
+            throw ResponseStatusException(HttpStatus.BAD_REQUEST, "400: Invalid rank provided!")
         }
 
         var leaderboardByRank: List<GameResult> = listOf();
