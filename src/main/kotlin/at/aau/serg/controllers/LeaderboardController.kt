@@ -16,30 +16,25 @@ class LeaderboardController(
     fun getLeaderboard(): List<GameResult> =
         gameResultService.getGameResults().sortedWith(compareBy({ -it.score },{it.timeInSeconds}, { it.id }))
 
-    // bei 10 Einträgen
-    // rank = 0 ersten 3 werden angezeigt (rank variable anpassen)
-    // rank = 10 alle werden angezeigt, anstatt die letzten 4 (zugriff über index überarbeiten)
-    // rank = 4 es werden nur 6 angezeigt anstatt 7 (Z. 31)
     @GetMapping("/{rank}")
     fun getLeaderBoardByRank(@PathVariable rank: Int): List<GameResult> {
-        var leaderboard = this.getLeaderboard();
+        val leaderboard = this.getLeaderboard();
+        val rankIndex = rank-1;
 
-        if(rank > leaderboard.size - 1 || rank < 0 || leaderboard.size == 0) {
-            return leaderboard
+        if(rankIndex >= leaderboard.size || rank < 1) {
+            return leaderboard;
         }
 
         var leaderboardByRank: List<GameResult> = listOf();
-        for(i in rank-3 until rank+3) {
+        for(i in rankIndex-3 until rankIndex+4) {
             if(i < 0) {
-                continue
+                continue;
             }
-            if(i > leaderboard.size - 1) {
-                break
+            if(i >= leaderboard.size) {
+                return leaderboardByRank;
             }
-            leaderboardByRank += leaderboard[i]
+            leaderboardByRank += leaderboard[i];
         }
-
-        return leaderboardByRank
-
+        return leaderboardByRank;
     }
 }
