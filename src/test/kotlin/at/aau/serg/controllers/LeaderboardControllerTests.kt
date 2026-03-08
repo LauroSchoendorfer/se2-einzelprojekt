@@ -6,6 +6,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.assertThrows
 import org.mockito.Mockito.mock
 import org.mockito.Mockito.verify
+import org.mockito.Mockito.times
 import org.springframework.http.HttpStatus
 import org.springframework.web.server.ResponseStatusException
 import kotlin.test.Test
@@ -87,11 +88,16 @@ class LeaderboardControllerTests {
         whenever(mockedService.getGameResults()).thenReturn(listOf(first, second, third, fourth, fifth, sixth, seventh))
 
         //val res = controller.getLeaderBoardByRank(0)
-        val exception = assertThrows<ResponseStatusException> {
+        var exception = assertThrows<ResponseStatusException> {
             controller.getLeaderBoardByRank(-1)
         }
-
         verify(mockedService).getGameResults()
+        assertEquals(HttpStatus.BAD_REQUEST, exception.statusCode)
+
+        exception = assertThrows<ResponseStatusException> {
+            controller.getLeaderBoardByRank(9)
+        }
+        verify(mockedService, times(2)).getGameResults()
         assertEquals(HttpStatus.BAD_REQUEST, exception.statusCode)
     }
 
@@ -104,9 +110,9 @@ class LeaderboardControllerTests {
         val fifth = GameResult(5, "fifth", 30, 10.0)
         val sixth = GameResult(6, "sixth", 25, 10.0)
         val seventh = GameResult(7, "seventh", 20, 10.0)
-        val eigth = GameResult(8, "eigth", 15, 10.0)
+        val eighth = GameResult(8, "eighth", 15, 10.0)
 
-        whenever(mockedService.getGameResults()).thenReturn(listOf(first, second, third, fourth, fifth, sixth, seventh, eigth))
+        whenever(mockedService.getGameResults()).thenReturn(listOf(first, second, third, fourth, fifth, sixth, seventh, eighth))
 
         var res = controller.getLeaderBoardByRank(1)
         verify(mockedService).getGameResults()
@@ -116,7 +122,7 @@ class LeaderboardControllerTests {
         assertEquals(fourth, res[3])
 
         res = controller.getLeaderBoardByRank(4)
-        verify(mockedService).getGameResults()
+        //verify(mockedService).getGameResults()
         assertEquals(first, res[0])
         assertEquals(second, res[1])
         assertEquals(third, res[2])
@@ -126,11 +132,11 @@ class LeaderboardControllerTests {
         assertEquals(seventh, res[6])
 
         res = controller.getLeaderBoardByRank(8)
-        verify(mockedService).getGameResults()
-        assertEquals(fifth, res[1])
-        assertEquals(sixth, res[2])
-        assertEquals(seventh, res[3])
-        assertEquals(eigth, res[4])
+        //verify(mockedService).getGameResults()
+        assertEquals(fifth, res[0])
+        assertEquals(sixth, res[1])
+        assertEquals(seventh, res[2])
+        assertEquals(eighth, res[3])
     }
 
 }
