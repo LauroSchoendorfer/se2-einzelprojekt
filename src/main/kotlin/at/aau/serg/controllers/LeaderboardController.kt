@@ -2,13 +2,10 @@ package at.aau.serg.controllers
 
 import at.aau.serg.models.GameResult
 import at.aau.serg.services.GameResultService
-import io.ktor.http.cio.Response
 import org.springframework.http.HttpStatus
-import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.ResponseBody
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.server.ResponseStatusException
 
@@ -23,23 +20,23 @@ class LeaderboardController(
 
     @GetMapping("/{rank}")
     fun getLeaderBoardByRank(@PathVariable rank: Int): List<GameResult> {
-        val leaderboard = this.getLeaderboard();
-        val rankIndex = rank-1;
+        val leaderboard = this.getLeaderboard()
+        val rankIndex = rank-1
 
         if(rankIndex >= leaderboard.size || rank < 1) {
             throw ResponseStatusException(HttpStatus.BAD_REQUEST, "400: Invalid rank provided!")
         }
 
-        var leaderboardByRank: List<GameResult> = listOf();
+        val leaderboardByRank: MutableList<GameResult> = mutableListOf()
         for(i in rankIndex-3 until rankIndex+4) {
             if(i < 0) {
-                continue;
+                continue
             }
             if(i >= leaderboard.size) {
-                return leaderboardByRank;
+                return leaderboardByRank
             }
-            leaderboardByRank += leaderboard[i];
+            leaderboardByRank += leaderboard[i]
         }
-        return leaderboardByRank;
+        return leaderboardByRank
     }
 }
